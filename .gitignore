@@ -1,0 +1,10 @@
+secondscreendesktop/.env.local
+secondscreendesktop/package-lock.json
+secondscreendesktop/node_modules
+secondscreendesktop/dist
+secondscreendesktop/out
+secondscreendesktop/.DS_Store
+secondscreendesktop/.eslintcache
+secondscreendesktop/*.log*
+secondscreendesktop/@
+secondscreendesktop/.vscode
