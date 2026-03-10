@@ -1,3 +1,5 @@
+
+#git ignore for desktop app
 secondscreendesktop/.env.local
 secondscreendesktop/package-lock.json
 secondscreendesktop/node_modules
@@ -8,3 +10,7 @@ secondscreendesktop/.eslintcache
 secondscreendesktop/*.log*
 secondscreendesktop/@
 secondscreendesktop/.vscode
+
+
+#git ignore for backend
+secondscreenbackend

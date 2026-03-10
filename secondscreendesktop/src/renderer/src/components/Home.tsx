@@ -1,9 +1,12 @@
 import { startSharing, stopSharing } from '@/functions/sharing'
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { ReactNode, useContext, useEffect, useRef, useState } from 'react'
+import NavBar from './ui/NavBar'
+import { AppContext } from '@/lib/contextTypes'
 
 export type statusType = 'Idle' | 'Connected' | 'Waiting'
 export default function Home(): ReactNode {
   const [sessionCode, setSessionCode] = useState<string | null>(null)
+  const { user } = useContext(AppContext)
   const [status, setStatus] = useState<statusType>('Idle')
   const [sources, setSources] = useState<Electron.DesktopCapturerSource[]>([])
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -11,30 +14,13 @@ export default function Home(): ReactNode {
   useEffect(() => {
     window.api.getSources()
     window.api.onSources((src) => setSources(src))
-  }, [])
+    // console.log(user?.id)
+  }, [user])
 
   return (
     <div className="h-screen bg-gray-950 text-white flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-8 py-4 border-b border-gray-800">
-        <h1 className="text-xl font-semibold">ScreenLink</h1>
-
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">Status:</span>
-          <span
-            className={`px-2 py-1 text-xs rounded ${
-              status === 'Idle'
-                ? 'bg-gray-700'
-                : status === 'Waiting'
-                  ? 'bg-yellow-600'
-                  : 'bg-green-600'
-            }`}
-          >
-            {status}
-          </span>
-        </div>
-      </div>
-
+      <NavBar status={status} />
       {/* Main Content */}
       <div className="flex flex-1 items-center justify-center">
         <div className="w-105 bg-gray-900 border border-gray-800 rounded-xl p-8 flex flex-col items-center gap-6">
@@ -51,7 +37,8 @@ export default function Home(): ReactNode {
                   setSessionCode: setSessionCode,
                   setStatus: setStatus,
                   source: sources[0].id,
-                  videoRef: videoRef
+                  videoRef: videoRef,
+                  userId: user!.id
                 })
               }}
               className="bg-blue-600 hover:bg-blue-500 transition px-6 py-2 rounded-lg"
@@ -83,7 +70,7 @@ export default function Home(): ReactNode {
           )}
         </div>
       </div>
-      <video ref={videoRef} />
+      {/* <video ref={videoRef} /> */}
       {/* Devices Section */}
       <div className="border-t border-gray-800 px-8 py-4">
         <h3 className="text-sm text-gray-400 mb-2">Connected Devices</h3>

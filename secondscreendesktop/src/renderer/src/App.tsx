@@ -3,29 +3,57 @@ import Login from './components/Login'
 import Protected from './components/Protected'
 import Home from './components/Home'
 import Unprotected from './components/Unprotected'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect } from 'react'
 import { supabase } from './lib/supabase'
+import { AppContext } from './lib/contextTypes'
+import { User } from './model/User'
 
 // import { desktopCapturer } from 'electron'
 
-function App(): React.JSX.Element {
-  const [isAuthenticated, setisAuthenticated] = useState(false)
-
-  useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        setisAuthenticated(true)
-      }
-      if (event === 'SIGNED_OUT') setisAuthenticated(false)
+async function getUser(id: string): Promise<User | null | undefined> {
+  const { data, error } = await supabase
+    .from('users')
+    .select('id, email, first_name, last_name')
+    .eq('id', id)
+    .single()
+  if (data) {
+    console.log(data)
+    return new User({
+      id: data.id,
+      email: data.email,
+      first_name: data.first_name,
+      last_name: data.last_name
     })
-  }, [])
+  }
+  if (error) return null
+}
+
+function App(): React.JSX.Element {
+  const { session, setSession, setUser } = useContext(AppContext)
+  useEffect(() => {
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        setSession(session)
+        console.log(session)
+        const data = await getUser(session.user.id)
+        if (data) {
+          console.log(data.id)
+          setUser(data)
+        }
+      }
+      if (event === 'SIGNED_OUT' || !session) {
+        setSession(null)
+        setUser(null)
+      }
+    })
+  }, [setSession, setUser])
   return (
     <HashRouter>
       <Routes>
         <Route
           path="/login"
           element={
-            <Unprotected isAuthenticated={isAuthenticated}>
+            <Unprotected isAuthenticated={session ? true : false}>
               <Login />
             </Unprotected>
           }
@@ -34,7 +62,7 @@ function App(): React.JSX.Element {
         <Route
           path="/"
           element={
-            <Protected isAuthenticated={isAuthenticated}>
+            <Protected isAuthenticated={session ? true : false}>
               <Home />
             </Protected>
           }
