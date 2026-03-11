@@ -8,7 +8,7 @@ export default function NavBar({ status }: { status: statusType }): JSX.Element 
 
   return (
     <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-800">
-      <h1 className="text-xl font-semibold">ScreenLink</h1>
+      <h1 className="text-xl font-semibold">SecondScreen</h1>
 
       <div className="flex items-center gap-2">
         <span className="text-sm text-gray-400">Status:</span>
@@ -31,8 +31,14 @@ export default function NavBar({ status }: { status: statusType }): JSX.Element 
         <button
           onClick={async () => {
             console.log('Clicked on signout')
+
             const { error } = await supabase.auth.signOut()
-            if (error) console.error(error)
+
+            if (error) {
+              console.error(error)
+            } else {
+              console.log('Logged out successfully')
+            }
           }}
           className="bg-red-700 hover:bg-red-600 rounded-lg px-3 py-1 text-sm"
         >

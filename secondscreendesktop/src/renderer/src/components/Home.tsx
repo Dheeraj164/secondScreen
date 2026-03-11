@@ -6,7 +6,7 @@ import { AppContext } from '@/lib/contextTypes'
 export type statusType = 'Idle' | 'Connected' | 'Waiting'
 export default function Home(): ReactNode {
   const [sessionCode, setSessionCode] = useState<string | null>(null)
-  const { user } = useContext(AppContext)
+  const { session } = useContext(AppContext)
   const [status, setStatus] = useState<statusType>('Idle')
   const [sources, setSources] = useState<Electron.DesktopCapturerSource[]>([])
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -14,8 +14,7 @@ export default function Home(): ReactNode {
   useEffect(() => {
     window.api.getSources()
     window.api.onSources((src) => setSources(src))
-    // console.log(user?.id)
-  }, [user])
+  }, [])
 
   return (
     <div className="h-screen bg-gray-950 text-white flex flex-col">
@@ -38,7 +37,7 @@ export default function Home(): ReactNode {
                   setStatus: setStatus,
                   source: sources[0].id,
                   videoRef: videoRef,
-                  userId: user!.id
+                  userId: session!.user.id
                 })
               }}
               className="bg-blue-600 hover:bg-blue-500 transition px-6 py-2 rounded-lg"
@@ -57,6 +56,7 @@ export default function Home(): ReactNode {
               <button
                 onClick={() =>
                   stopSharing({
+                    session_code: sessionCode,
                     setSessionCode: setSessionCode,
                     setStatus: setStatus,
                     videoRef: videoRef

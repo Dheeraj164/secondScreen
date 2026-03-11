@@ -4,10 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-
+import { Eye, EyeOff } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.(com|edu)$/
@@ -29,6 +29,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>
 
 export default function Login(): React.ReactNode {
+  const [seePassword, setSeePassword] = useState(false)
   useEffect(() => {
     supabase.auth.getSession().then((data) => console.log('current session', data))
   }, [])
@@ -77,13 +78,22 @@ export default function Login(): React.ReactNode {
             {/* Password */}
             <div className="grid gap-2">
               <Label>Password</Label>
+              <div className="relative w-full">
+                <Input
+                  type={seePassword ? 'text' : 'password'}
+                  placeholder="********"
+                  {...register('password')}
+                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-500 pr-10"
+                />
 
-              <Input
-                type="password"
-                placeholder="********"
-                {...register('password')}
-                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-500"
-              />
+                <button
+                  type="button"
+                  onClick={() => setSeePassword(!seePassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                >
+                  {seePassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+              </div>
 
               {errors.password && (
                 <p className="text-rose-400 text-sm">{errors.password.message}</p>

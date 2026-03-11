@@ -14,3 +14,50 @@ secondscreendesktop/.vscode
 
 #git ignore for backend
 secondscreenbackend
+
+
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+secondscreenmobile/node_modules/
+
+# Expo
+secondscreenmobile/.expo/
+secondscreenmobile/dist/
+secondscreenmobile/web-build/
+secondscreenmobile/expo-env.d.ts
+
+# Native
+secondscreenmobile/.kotlin/
+secondscreenmobile/*.orig.*
+secondscreenmobile/*.jks
+secondscreenmobile/*.p8
+secondscreenmobile/*.p12
+secondscreenmobile/*.key
+secondscreenmobile/*.mobileprovision
+
+# Metro
+secondscreenmobile/.metro-health-check*
+
+# debug
+secondscreenmobile/npm-debug.*
+secondscreenmobile/yarn-debug.*
+secondscreenmobile/yarn-error.*
+
+# macOS
+secondscreenmobile/.DS_Store
+secondscreenmobile/*.pem
+
+# local env files
+secondscreenmobile/.env*.local 
+
+# typescript
+secondscreenmobile/*.tsbuildinfo
+
+secondscreenmobile/app-example
+
+secondscreenmobile/package-lock.json
+
+# generated native folders
+secondscreenmobile/ios
+secondscreenmobile/android

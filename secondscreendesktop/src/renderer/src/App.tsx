@@ -6,46 +6,27 @@ import Unprotected from './components/Unprotected'
 import { useContext, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import { AppContext } from './lib/contextTypes'
-import { User } from './model/User'
 
 // import { desktopCapturer } from 'electron'
-
-async function getUser(id: string): Promise<User | null | undefined> {
-  const { data, error } = await supabase
-    .from('users')
-    .select('id, email, first_name, last_name')
-    .eq('id', id)
-    .single()
-  if (data) {
-    console.log(data)
-    return new User({
-      id: data.id,
-      email: data.email,
-      first_name: data.first_name,
-      last_name: data.last_name
-    })
-  }
-  if (error) return null
-}
 
 function App(): React.JSX.Element {
   const { session, setSession, setUser } = useContext(AppContext)
   useEffect(() => {
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth event:', event)
       if (session) {
         setSession(session)
-        console.log(session)
-        const data = await getUser(session.user.id)
-        if (data) {
-          console.log(data.id)
-          setUser(data)
-        }
       }
       if (event === 'SIGNED_OUT' || !session) {
+        console.log(event)
         setSession(null)
         setUser(null)
       }
     })
+
+    return () => {
+      listener.subscription.unsubscribe()
+    }
   }, [setSession, setUser])
   return (
     <HashRouter>
