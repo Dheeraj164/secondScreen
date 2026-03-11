@@ -37,7 +37,7 @@ export default function RootLayout() {
         }}
         name="index"
       />
-      <Stack.Screen name="[sessionCode]" />
+      <Stack.Screen options={{ headerShown: false }} name="[sessionCode]" />
     </Stack>
   );
 }

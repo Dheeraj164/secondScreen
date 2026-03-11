@@ -605,6 +605,8 @@ export async function startSharing({
 /* ---------------------------------------------------- */
 /* WEBRTC SHARING */
 /* ---------------------------------------------------- */
+const pendingCandidates: RTCIceCandidate[] = []
+let offerInserted = false
 
 async function startWebRTCSharing(
   stream: MediaStream,
@@ -614,9 +616,6 @@ async function startWebRTCSharing(
   peerConnection = createPeerConnection()
 
   const pc = peerConnection
-
-  const pendingCandidates: RTCIceCandidate[] = []
-  let offerInserted = false
 
   /* Add tracks */
   stream.getTracks().forEach((track) => pc.addTrack(track, stream))
@@ -665,8 +664,8 @@ async function startWebRTCSharing(
     )
   }
 
-  listenForMobileCandidates(sessionCode)
   listenForAnswer(sessionCode)
+  listenForMobileCandidates(sessionCode)
 }
 
 /* ---------------------------------------------------- */
@@ -692,18 +691,22 @@ function listenForMobileCandidates(sessionCode: string): void {
         event: 'INSERT',
         schema: 'public',
         table: 'candidates',
-        filter: `session_code=eq.${sessionCode}`
+        filter: `session_code=eq.${sessionCode},direction=eq.mobileToDesktop`
       },
       (payload) => {
         const row = payload.new as {
           candidate: RTCIceCandidateInit
           direction: CandidateDirection
         }
+        console.log('candidates: ', row.candidate)
 
         if (row.direction !== 'mobileToDesktop') return
 
         const candidate = new RTCIceCandidate(row.candidate)
-
+        if (!offerInserted) {
+          pendingCandidates.push(candidate)
+          return
+        }
         peerConnection?.addIceCandidate(candidate)
       }
     )
@@ -733,6 +736,11 @@ function listenForAnswer(sessionCode: string): void {
         const answer = new RTCSessionDescription(row.answer)
 
         await peerConnection?.setRemoteDescription(answer)
+        for (const candidate of pendingCandidates) {
+          await peerConnection?.addIceCandidate(candidate)
+        }
+
+        pendingCandidates.length = 0
       }
     )
     .subscribe()

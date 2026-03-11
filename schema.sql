@@ -43,8 +43,9 @@ create table public.sessions (
 -- create table public.candidates
 create table public.candidates (
   id uuid not null default gen_random_uuid (),
-  offer_code text not null,
+  session_code text not null,
   direction text null,
   candidate jsonb null,
-  constraint candidates_pkey primary key (id)
+  constraint candidates_pkey primary key (id),
+  constraint candidates_session_code_fkey foreign KEY (session_code) references sessions (session_code)
 ) TABLESPACE pg_default;
