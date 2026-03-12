@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 
 export default function RootLayout() {
-  const [isAuth, setIsAuth] = useState<boolean | null>(null);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
 
   useEffect(() => {
     // get initial session
@@ -14,7 +14,8 @@ export default function RootLayout() {
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setIsAuth(!!session);
+        if (session) setIsAuth(true);
+        if (_event === "SIGNED_OUT") setIsAuth(false);
       },
     );
 

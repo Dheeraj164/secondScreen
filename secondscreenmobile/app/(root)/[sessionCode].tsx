@@ -2,6 +2,7 @@ import { ActivityIndicator, Dimensions, StyleSheet, View } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { acceptOffer } from "@/utils/sharing";
+import * as Device from "expo-device";
 import { MediaStream, RTCPeerConnection, RTCView } from "react-native-webrtc";
 const { width, height } = Dimensions.get("screen");
 export default function Session() {
@@ -12,7 +13,13 @@ export default function Session() {
   const router = useRouter();
 
   useEffect(() => {
+    const deviceInfo = {
+      deviceName: Device.modelName,
+      deviceType: Device.DeviceType[Device.deviceType!],
+      deviceOS: Device.osName,
+    };
     acceptOffer({
+      deviceInfo: deviceInfo,
       router: router,
       peerConnectionRef: peerContectionRef,
       session_code: session_code!,

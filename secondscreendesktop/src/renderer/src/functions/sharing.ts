@@ -550,7 +550,7 @@
 // function generateSessionCode(): string {
 //   return Math.floor(100000 + Math.random() * 900000).toString()
 // }
-import { statusType } from '@/components/Home'
+import { deviceInfoType, statusType } from '@/components/Home'
 import { supabase } from '@/lib/supabase'
 import { Dispatch, RefObject, SetStateAction } from 'react'
 
@@ -559,6 +559,7 @@ let peerConnection: RTCPeerConnection | null = null
 type CandidateDirection = 'desktopToMobile' | 'mobileToDesktop'
 
 interface StartSharingProps {
+  setDeviceInfo: Dispatch<SetStateAction<deviceInfoType | null>>
   setSessionCode: Dispatch<SetStateAction<string | null>>
   setStatus: Dispatch<SetStateAction<statusType>>
   source: string
@@ -567,6 +568,7 @@ interface StartSharingProps {
 }
 
 interface StopSharingProps {
+  setDeviceInfo: Dispatch<SetStateAction<deviceInfoType | null>>
   session_code: string
   setSessionCode: Dispatch<SetStateAction<string | null>>
   setStatus: Dispatch<SetStateAction<statusType>>
@@ -578,6 +580,7 @@ interface StopSharingProps {
 /* ---------------------------------------------------- */
 
 export async function startSharing({
+  setDeviceInfo,
   setSessionCode,
   setStatus,
   source,
@@ -596,7 +599,15 @@ export async function startSharing({
       videoRef.current.srcObject = stream
     }
 
-    await startWebRTCSharing(stream, code, userId)
+    await startWebRTCSharing(
+      setDeviceInfo,
+      stream,
+      code,
+      setSessionCode,
+      setStatus,
+      videoRef,
+      userId
+    )
   } catch (err) {
     console.error('startSharing error:', err)
   }
@@ -609,8 +620,12 @@ const pendingCandidates: RTCIceCandidate[] = []
 let offerInserted = false
 
 async function startWebRTCSharing(
+  setDeviceInfo: Dispatch<SetStateAction<deviceInfoType | null>>,
   stream: MediaStream,
   sessionCode: string,
+  setSessionCode: Dispatch<SetStateAction<string | null>>,
+  setStatus: Dispatch<SetStateAction<statusType>>,
+  videoRef: RefObject<HTMLVideoElement | null>,
   userId: string
 ): Promise<void> {
   peerConnection = createPeerConnection()
@@ -630,6 +645,33 @@ async function startWebRTCSharing(
     }
 
     insertCandidate(event.candidate, sessionCode, 'desktopToMobile')
+  }
+
+  const dataChannel = peerConnection.createDataChannel('device-info')
+
+  dataChannel.onopen = () => {
+    console.log('DataChannel open')
+  }
+
+  dataChannel.onmessage = (event) => {
+    console.log('Device info received:', JSON.parse(event.data))
+    setDeviceInfo(JSON.parse(event.data))
+  }
+
+  pc.onconnectionstatechange = () => {
+    const state = pc.connectionState
+    console.log('Mobile connection state:', state)
+    if (state === 'connected') setStatus('Connected')
+
+    if (state === 'failed' || state === 'closed' || state === 'disconnected') {
+      stopSharing({
+        setDeviceInfo,
+        session_code: sessionCode,
+        setSessionCode: setSessionCode,
+        setStatus: setStatus,
+        videoRef: videoRef
+      })
+    }
   }
 
   /* Create offer */
@@ -769,6 +811,7 @@ async function insertCandidate(
 /* ---------------------------------------------------- */
 
 export async function stopSharing({
+  setDeviceInfo,
   session_code,
   setSessionCode,
   setStatus,
@@ -776,6 +819,7 @@ export async function stopSharing({
 }: StopSharingProps): Promise<void> {
   setSessionCode(null)
   setStatus('Idle')
+  setDeviceInfo(null)
 
   /* Stop video */
   if (videoRef.current?.srcObject) {

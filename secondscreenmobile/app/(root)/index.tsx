@@ -17,6 +17,7 @@ export default function JoinSessionScreen() {
   const handleJoin = () => {
     router.push(`./${sessionCode}`);
     console.log("Joining session:", sessionCode);
+    setSessionCode("");
   };
 
   return (

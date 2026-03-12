@@ -1,13 +1,20 @@
 import { startSharing, stopSharing } from '@/functions/sharing'
-import { ReactNode, useContext, useEffect, useRef, useState } from 'react'
+import { Activity, ReactNode, useContext, useEffect, useRef, useState } from 'react'
 import NavBar from './ui/NavBar'
 import { AppContext } from '@/lib/contextTypes'
-
+import { Tablet } from 'lucide-react'
 export type statusType = 'Idle' | 'Connected' | 'Waiting'
+export type deviceInfoType = {
+  deviceName: string | null
+  deviceType: string | null
+  deviceOS: string | null
+}
+
 export default function Home(): ReactNode {
   const [sessionCode, setSessionCode] = useState<string | null>(null)
   const { session } = useContext(AppContext)
   const [status, setStatus] = useState<statusType>('Idle')
+  const [deviceInfo, setDeviceInfo] = useState<deviceInfoType | null>(null)
   const [sources, setSources] = useState<Electron.DesktopCapturerSource[]>([])
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
@@ -33,6 +40,7 @@ export default function Home(): ReactNode {
             <button
               onClick={() => {
                 startSharing({
+                  setDeviceInfo: setDeviceInfo,
                   setSessionCode: setSessionCode,
                   setStatus: setStatus,
                   source: sources[0].id,
@@ -56,6 +64,7 @@ export default function Home(): ReactNode {
               <button
                 onClick={() =>
                   stopSharing({
+                    setDeviceInfo: setDeviceInfo,
                     session_code: sessionCode,
                     setSessionCode: setSessionCode,
                     setStatus: setStatus,
@@ -75,11 +84,34 @@ export default function Home(): ReactNode {
       <div className="border-t border-gray-800 px-8 py-4">
         <h3 className="text-sm text-gray-400 mb-2">Connected Devices</h3>
 
-        <div className="flex gap-4 text-sm">
-          <div className="bg-gray-900 px-4 py-2 rounded border border-gray-800">
-            No devices connected
+        <Activity mode={deviceInfo ? 'visible' : 'hidden'}>
+          <div className="flex gap-4 text-sm">
+            <div className="flex items-center gap-4 bg-gray-900 px-5 py-4 rounded-xl border border-gray-800 shadow-md hover:border-gray-700 transition">
+              <div className="bg-gray-800 p-3 rounded-lg text-gray-200">
+                <div className="bg-gray-800 p-3 rounded-lg text-gray-200">
+                  <Tablet />
+                </div>
+              </div>
+
+              <div className="flex flex-col">
+                <span className="text-white font-medium text-base">
+                  {deviceInfo?.deviceName ?? 'Unknown Device'}
+                </span>
+
+                <span className="text-gray-400">{deviceInfo?.deviceType}</span>
+
+                <span className="text-gray-500 text-xs">{deviceInfo?.deviceOS}</span>
+              </div>
+            </div>
           </div>
-        </div>
+        </Activity>
+        <Activity mode={!deviceInfo ? 'visible' : 'hidden'}>
+          <div className="flex gap-4 text-sm">
+            <div className="bg-gray-900 px-4 py-2 rounded border border-gray-800">
+              No devices connected
+            </div>
+          </div>
+        </Activity>
       </div>
     </div>
   )
