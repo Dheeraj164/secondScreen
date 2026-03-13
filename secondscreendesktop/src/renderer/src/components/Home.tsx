@@ -43,7 +43,7 @@ export default function Home(): ReactNode {
                   setDeviceInfo: setDeviceInfo,
                   setSessionCode: setSessionCode,
                   setStatus: setStatus,
-                  source: sources[0].id,
+                  source: sources.length > 1 ? sources[1].id : sources[0].id,
                   videoRef: videoRef,
                   userId: session!.user.id
                 })
