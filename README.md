@@ -1,6 +1,6 @@
 # secondScreen
 
-Turn any phone into a wireless second display for your desktop — no cables, no installs, just a room code.
+Turn any phone into a wireless second display for your desktop — no cables, just a room code.
 
 > **Live demo video** 👇  
 > <!-- Replace the line below with your actual video embed or GIF -->
