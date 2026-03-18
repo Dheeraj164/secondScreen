@@ -18,7 +18,7 @@ secondScreen uses **WebRTC** for peer-to-peer screen streaming between a desktop
 3. Your phone instantly mirrors your desktop screen in real time
 
 <!-- Replace with your architecture diagram image -->
-![Architecture Diagram](./assets/expense_tracker_architecture_diagram.png)
+![Architecture Diagram](./assets/secondScreen_architecture_diagram.png)
 
 ---
 
