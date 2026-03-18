@@ -131,4 +131,4 @@ Standard WebRTC requires a signalling channel to exchange connection metadata be
 ## Author
 
 **Dheeraj Kumar Ravi Gowda**  
-[Portfolio](https://dheerajgowda.dev) · [LinkedIn](https://linkedin.com/in/dheerajgowda) · [GitHub](https://github.com/Dheeraj164)
+[Portfolio](https://dheerajgowda.vercel.app/) · [LinkedIn](https://www.linkedin.com/in/dheeraj164/) · [GitHub](https://github.com/Dheeraj164)
