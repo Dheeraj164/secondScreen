@@ -4,7 +4,7 @@ Turn any phone into a wireless second display for your desktop — no cables, no
 
 > **Live demo video** 👇  
 > <!-- Replace the line below with your actual video embed or GIF -->
-> ![Demo](https://youtu.be/damvIBe9CPk)
+>[![Watch the demo](https://img.youtube.com/vi/damvIBe9CPk/maxresdefault.jpg)](https://youtu.be/damvIBe9CPk)
 > <!-- OR if uploading to GitHub: paste your screen recording link here -->
 
 ---
