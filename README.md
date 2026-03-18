@@ -52,7 +52,7 @@ Once the peer connection is established, all media streams flow **directly betwe
 
 | Layer | Technology |
 |---|---|
-| Desktop app | Next.js + TypeScript |
+| Desktop app | ElectronJS + React + TypeScript |
 | Mobile app | React Native + Expo |
 | Auth & Database | Supabase (PostgreSQL) |
 | Signalling | Supabase Realtime |
